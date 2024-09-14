@@ -21,7 +21,9 @@
  *      edit    item to edit (if net given: a new item will be created)
  *      additional parameters will be accepted if specified in *Handler->webformConfig()[prefill] when creating a new item
  */
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once('common.php');
 
 $smarty = PFASmarty::getInstance();
@@ -174,7 +176,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (count($handler->errormsg)) { # might happen if domain_postcreation fails
                 flash_error($handler->errormsg);
             }
-
+		
+if ($table === 'domain' && isset($values['domain'])) {
+    $domain_name = $values['domain'];
+    $output = shell_exec("/usr/local/bin/NewDomain.sh " . escapeshellarg($domain_name) . " 2>&1");
+}
             # remember prefill values for next usage of the form
             if (isset($formconf['prefill'])) {
                 foreach ($formconf['prefill'] as $field) {
